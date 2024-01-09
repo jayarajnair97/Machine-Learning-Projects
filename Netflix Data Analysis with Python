@@ -1,0 +1,173 @@
+# Scope for project
+ Among the biggest suppliers of internet streaming services is Netflix. Due to its massive subscriber base, it gathers a tremendous amount of data. I'm going to expose you to a data science 
+ project using Python to analyze data from Netflix in this article. Because Netflix has shifted its business model from on-demand DVD movie rental to focusing heavily on the production of 
+ their original series, the platform has continually focused on changing business needs, making it possible for us to examine a large amount of data and models from Netflix.
+
+# Some of the mostimportant tasks that we can analyze from Netflix data are:
+ understand what content is available, 
+ understand the similarities between the content, 
+ understand the network between actors and directors, 
+ what exactly Netflix is focusing on, 
+ and sentiment analysis of content available on Netflix.
+
+# Importing necessary libraries
+
+import numpy as np # linear algebra
+import pandas as pd # for data preparation
+import plotly.express as px # for data visualization
+from textblob import TextBlob # for sentiment analysis
+
+dff=pd.read_csv('netflix_dataset.csv')
+dff.head()
+
+dff.shape
+# out:
+(8807, 12)
+
+dff.describe
+# out:
+<bound method NDFrame.describe of      show_id     type                  title         director  \
+0         s1    Movie   Dick Johnson Is Dead  Kirsten Johnson   
+1         s2  TV Show          Blood & Water              NaN   
+2         s3  TV Show              Ganglands  Julien Leclercq   
+3         s4  TV Show  Jailbirds New Orleans              NaN   
+4         s5  TV Show           Kota Factory              NaN   
+...      ...      ...                    ...              ...   
+8802   s8803    Movie                 Zodiac    David Fincher   
+8803   s8804  TV Show            Zombie Dumb              NaN   
+8804   s8805    Movie             Zombieland  Ruben Fleischer   
+8805   s8806    Movie                   Zoom     Peter Hewitt   
+8806   s8807    Movie                 Zubaan      Mozez Singh   
+
+                                                   cast        country  \
+0                                                   NaN  United States   
+1     Ama Qamata, Khosi Ngema, Gail Mabalane, Thaban...   South Africa   
+2     Sami Bouajila, Tracy Gotoas, Samuel Jouy, Nabi...            NaN   
+3                                                   NaN            NaN   
+4     Mayur More, Jitendra Kumar, Ranjan Raj, Alam K...          India   
+...                                                 ...            ...   
+8802  Mark Ruffalo, Jake Gyllenhaal, Robert Downey J...  United States   
+8803                                                NaN            NaN   
+8804  Jesse Eisenberg, Woody Harrelson, Emma Stone, ...  United States   
+8805  Tim Allen, Courteney Cox, Chevy Chase, Kate Ma...  United States   
+8806  Vicky Kaushal, Sarah-Jane Dias, Raaghav Chanan...          India   
+
+              date_added  release_year rating   duration  \
+0     September 25, 2021          2020  PG-13     90 min   
+1     September 24, 2021          2021  TV-MA  2 Seasons   
+2     September 24, 2021          2021  TV-MA   1 Season   
+3     September 24, 2021          2021  TV-MA   1 Season   
+4     September 24, 2021          2021  TV-MA  2 Seasons   
+...                  ...           ...    ...        ...   
+8802   November 20, 2019          2007      R    158 min   
+8803        July 1, 2019          2018  TV-Y7  2 Seasons   
+8804    November 1, 2019          2009      R     88 min   
+8805    January 11, 2020          2006     PG     88 min   
+8806       March 2, 2019          2015  TV-14    111 min   
+
+                                              listed_in  \
+0                                         Documentaries   
+1       International TV Shows, TV Dramas, TV Mysteries   
+2     Crime TV Shows, International TV Shows, TV Act...   
+3                                Docuseries, Reality TV   
+4     International TV Shows, Romantic TV Shows, TV ...   
+...                                                 ...   
+8802                     Cult Movies, Dramas, Thrillers   
+8803             Kids' TV, Korean TV Shows, TV Comedies   
+8804                            Comedies, Horror Movies   
+8805                 Children & Family Movies, Comedies   
+8806     Dramas, International Movies, Music & Musicals   
+
+                                            description  
+0     As her father nears the end of his life, filmm...  
+1     After crossing paths at a party, a Cape Town t...  
+2     To protect his family from a powerful drug lor...  
+3     Feuds, flirtations and toilet talk go down amo...  
+4     In a city of coaching centers known to train I...  
+...                                                 ...  
+8802  A political cartoonist, a crime reporter and a...  
+8803  While living alone in a spooky town, a young g...  
+8804  Looking to survive in a world taken over by zo...  
+8805  Dragged from civilian life, a former superhero...  
+8806  A scrappy but poor boy worms his way into a ty...  
+
+[8807 rows x 12 columns]>
+
+dff.columns
+# out:
+Index(['show_id', 'type', 'title', 'director', 'cast', 'country', 'date_added',
+       'release_year', 'rating', 'duration', 'listed_in', 'description'],
+      dtype='object')
+
+# Distribution of Content:
+z = dff.groupby(['rating']).size().reset_index(name='counts')
+pieChart = px.pie(z, values='counts', names='rating', 
+                  title='Distribution of Content Ratings on Netflix',
+                  color_discrete_sequence=px.colors.qualitative.Set3)
+pieChart.show()
+#(The majority of content on Netflix is categorized as “TV-MA”, which means that most of the content available on Netflix is intended for viewing by mature and adult audiences.)
+
+# Top 5 Actors and Directors:
+
+dff['director']=dff['director'].fillna('No Director Specified')
+filtered_directors=pd.DataFrame()
+filtered_directors=dff['director'].str.split(',',expand=True).stack()
+filtered_directors=filtered_directors.to_frame()
+filtered_directors.columns=['Director']
+directors=filtered_directors.groupby(['Director']).size().reset_index(name='Total Content')
+directors=directors[directors.Director !='No Director Specified']
+directors=directors.sort_values(by=['Total Content'],ascending=False)
+directorsTop5=directors.head()
+directorsTop5=directorsTop5.sort_values(by=['Total Content'])
+fig1=px.bar(directorsTop5,x='Total Content',y='Director',title='Top 5 Directors on Netflix')
+fig1.show()
+#(The top 5 directors on this platform can be inferred from the graph above:
+Raul Campos, Jan Suter, Jay Karas, Marcus Raboy, Jay Chapman)
+
+# The top 5 successful actors on this platform
+dff['cast']=dff['cast'].fillna('No Cast Specified')
+filtered_cast=pd.DataFrame()
+filtered_cast=dff['cast'].str.split(',',expand=True).stack()
+filtered_cast=filtered_cast.to_frame()
+filtered_cast.columns=['Actor']
+actors=filtered_cast.groupby(['Actor']).size().reset_index(name='Total Content')
+actors=actors[actors.Actor !='No Cast Specified']
+actors=actors.sort_values(by=['Total Content'],ascending=False)
+actorsTop5=actors.head()
+actorsTop5=actorsTop5.sort_values(by=['Total Content'])
+fig2=px.bar(actorsTop5,x='Total Content',y='Actor', title='Top 5 Actors on Netflix')
+fig2.show()
+#(From the above plot, it is derived that the top 5 actors on Netflix are:
+Anupam Kher, Rupa Bhimani, Taakahiro Sakurai, Julie Tejwani, Om Puri)
+
+# Analyzing Content on Netflix:
+
+df1=dff[['type','release_year']]
+df1=df1.rename(columns={"release_year": "Release Year"})
+df2=df1.groupby(['Release Year','type']).size().reset_index(name='Total Content')
+df2=df2[df2['Release Year']>=2010]
+fig3 = px.line(df2, x="Release Year", y="Total Content", color='type',title='Trend of content produced over the years on Netflix')
+fig3.show()
+#(The line graph above demonstrates that since 2018, there has been a decrease in the amount of content produced for television programs and films.)
+
+dfx=dff[['release_year','description']]
+dfx=dfx.rename(columns={'release_year':'Release Year'})
+for index,row in dfx.iterrows():
+    z=row['description']
+    testimonial=TextBlob(z)
+    p=testimonial.sentiment.polarity
+    if p==0:
+        sent='Neutral'
+    elif p>0:
+        sent='Positive'
+    else:
+        sent='Negative'
+    dfx.loc[[index,2],'Sentiment']=sent
+
+
+dfx=dfx.groupby(['Release Year','Sentiment']).size().reset_index(name='Total Content')
+
+dfx=dfx[dfx['Release Year']>=2010]
+fig4 = px.bar(dfx, x="Release Year", y="Total Content", color="Sentiment", title="Sentiment of content on Netflix")
+fig4.show()
+#(the above graph shows that the overall positive content is always greater than the neutral and negative content combined.)
