@@ -1,0 +1,229 @@
+# Scope for project
+  Ads Click Through Rate is the ratio of how many users clicked on your ad to how many users viewed your ad. For example, 5 out of 100 users click on the ad while watching a youtube video. So, in this case, the CTR of the youtube ad will be 5%. Analyzing the click-through rate help companies in finding the best ad for their target audience.
+
+# Ads Click-Through Rate Prediction
+ Ads Click-through rate prediction means predicting whether the user will click on the ad. In the task of ads click-through rate prediction, we need to train a Machine Learning model to find relationships between the characteristics of all the users who click on ads.
+
+# Click Through Case Study and Rate Analysis
+ The ratio of users who clicked on an advertisement or link to all users who left impressions on the ad or link is known as the click-through rate. Put simply, CTR is equal to clicks ÷ impressions. Businesses can ascertain the kinds of individuals most inclined to click on their advertisements by analyzing the click-through rate. Your advertising techniques are validated by a high click-through rate.
+ Daily Time Spent on Site: the daily timespan of the user on the website; Age: the age of the user; Area Income: the average income in the area of the user; Daily Internet Usage: the daily internet usage of the user; Ad Topic Line: the title of the ad; City: the city of the user; Gender: the gender of the user; Country: the country of the user; Timestamp: the time when the user visited the website; Clicked on Ad: 1 if the user clicked on the ad, otherwise 0;
+ The “Clicked on Ad” column is the target variable in the dataset. 
+
+# Importing necessary libraries
+import pandas as pd
+import plotly.graph_objects as go
+import plotly.express as px
+import plotly.io as pio
+import numpy as np
+pio.templates.default = "plotly_white"
+
+data = pd.read_csv("CTR_Dataset")
+data.head()
+
+# The “Clicked on Ad” column contains 0 and 1 values, where 0 means not clicked, and 1 means clicked. I’ll transform these values into “yes” and “no”:
+data["Clicked on Ad"] = data["Clicked on Ad"].map({0: "No", 
+                               1: "Yes"})
+
+#Click Through Rate Analysis
+
+fig = px.box(data, 
+             x="Daily Time Spent on Site",  
+             color="Clicked on Ad", 
+             title="Click Through Rate based Time Spent on Site", 
+             color_discrete_map={'Yes':'blue',
+                                 'No':'red'})
+fig.update_traces(quartilemethod="exclusive")
+fig.show()
+# the users who spend more time on the website click more on ads.
+
+fig = px.box(data, 
+             x="Daily Internet Usage",  
+             color="Clicked on Ad", 
+             title="Click Through Rate based on Daily Internet Usage", 
+             color_discrete_map={'Yes':'blue',
+                                 'No':'red'})
+fig.update_traces(quartilemethod="exclusive")
+fig.show()
+#the users with high internet usage click less on ads compared to the users with low internet usage.
+
+fig = px.box(data, 
+             x="Age",  
+             color="Clicked on Ad", 
+             title="Click Through Rate based on Age", 
+             color_discrete_map={'Yes':'blue',
+                                 'No':'red'})
+fig.update_traces(quartilemethod="exclusive")
+fig.show()
+#users around 40 years click more on ads compared to users around 27-36 years old.
+
+fig = px.box(data, 
+             x="Area Income",  
+             color="Clicked on Ad", 
+             title="Click Through Rate based on Income", 
+             color_discrete_map={'Yes':'blue',
+                                 'No':'red'})
+fig.update_traces(quartilemethod="exclusive")
+fig.show()
+#There’s not much difference, but people from high-income areas click less on ads.
+
+# Calculating CTR of Ads
+data["Clicked on Ad"].value_counts()
+#out:
+Clicked on Ad
+No     5083
+Yes    4917
+Name: count, dtype: int64
+
+# in:
+click_through_rate = 4917 / 10000 * 100
+print(click_through_rate)
+# out:
+49.17
+
+# Click Through Rate Prediction Model
+data["Gender"] = data["Gender"].map({"Male": 1, 
+                               "Female": 0})
+
+x=data.iloc[:,0:7]
+x=x.drop(['Ad Topic Line','City'],axis=1)
+y=data.iloc[:,9]
+
+from sklearn.model_selection import train_test_split
+xtrain,xtest,ytrain,ytest=train_test_split(x,y,
+                                           test_size=0.2,
+                                           random_state=4)
+
+from sklearn.ensemble import RandomForestClassifier
+model = RandomForestClassifier()
+model.fit(x, y)
+# out:
+RandomForestClassifier
+RandomForestClassifier()
+
+from sklearn.tree import DecisionTreeClassifier
+model = DecisionTreeClassifier()
+model.fit(x, y)
+# out:
+DecisionTreeClassifier
+DecisionTreeClassifier()
+
+from sklearn.linear_model import LogisticRegression
+model = LogisticRegression()
+model.fit(X, y)
+# out:
+LogisticRegression
+LogisticRegression()
+
+from sklearn.svm import SVC
+model = SVC()
+model.fit(X, y)
+# out:
+SVC
+SVC()
+
+from sklearn.naive_bayes import GaussianNB
+model = GaussianNB()
+model.fit(X, y)
+# out:
+GaussianNB
+GaussianNB()
+
+# Click Through Rate Prediction Model
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
+
+# Assuming you have DataFrame data with features and labels
+# Replace 'Clicked on Ad' with the actual name of your label column
+X = data.drop(['Clicked on Ad', 'Ad Topic Line', 'City', 'Country', 'Timestamp'], axis=1)
+y = data['Clicked on Ad']
+
+# Split the data into training and testing sets
+Xtrain, Xtest, ytrain, ytest = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Train a RandomForestClassifier
+model1 = RandomForestClassifier()
+model1.fit(Xtrain, ytrain)
+
+# Make predictions on the test set for RandomForestClassifier
+y_pred1 = model1.predict(Xtest)
+
+# Calculate accuracy for RandomForestClassifier
+accuracy1 = accuracy_score(ytest, y_pred1)
+print("Accuracy for RandomForestClassifier:", accuracy1)
+
+# Train a DecisionTreeClassifier
+model2 = DecisionTreeClassifier()
+model2.fit(Xtrain, ytrain)
+
+# Make predictions on the test set for DecisionTreeClassifier
+y_pred2 = model2.predict(Xtest)
+
+# Calculate accuracy for DecisionTreeClassifier
+accuracy2 = accuracy_score(ytest, y_pred2)
+print("Accuracy for DecisionTreeClassifier:", accuracy2)
+
+from sklearn.linear_model import LogisticRegression
+model3 = LogisticRegression()
+model3.fit(Xtrain, ytrain)
+
+# Make predictions on the test set for Logistic Regression
+y_pred3 = model3.predict(Xtest)
+
+# Calculate accuracy for Logistic Regression
+accuracy3 = accuracy_score(ytest, y_pred3)
+print("Accuracy for Logistic Regression:", accuracy3)
+
+from sklearn.svm import SVC
+model4 = SVC()
+model4.fit(Xtrain, ytrain)
+
+# Make predictions on the test set for SVM
+y_pred4 = model4.predict(Xtest)
+
+# Calculate accuracy for SVM
+accuracy4 = accuracy_score(ytest, y_pred4)
+print("Accuracy for SVM:", accuracy4)
+
+#from sklearn.naive_bayes import GaussianNB
+model5 = GaussianNB()
+model5.fit(Xtrain, ytrain)
+
+# Make predictions on the test set for GaussianNB
+y_pred5 = model5.predict(Xtest)
+
+# Calculate accuracy for GaussianNB
+accuracy5 = accuracy_score(ytest, y_pred5)
+print("Accuracy for GaussianNB:", accuracy5)
+
+# out:
+Accuracy for RandomForestClassifier: 0.7765
+Accuracy for DecisionTreeClassifier: 0.737
+Accuracy for Logistic Regression: 0.711
+Accuracy for SVM: 0.5425
+Accuracy for GaussianNB: 0.717
+
+# Prediction of model
+import numpy as np
+
+# Get input features from the user
+a = float(input("Daily Time Spent on Site: "))
+b = float(input("Age: "))
+c = float(input("Area Income: "))
+d = float(input("Daily Internet Usage: "))
+e = float(input("Gender (Male = 1, Female = 0): "))
+
+# Create a NumPy array with the input features
+features = np.array([[a, b, c, d, e]])
+
+# Print the predicted result
+print("Will the user click on ad =", model.predict(features))
+
+# out:
+Daily Time Spent on Site: 279
+Age: 65
+Area Income: 29000
+Daily Internet Usage: 210
+Gender (Male = 1, Female = 0): 1
+Will the user click on ad = ['Yes']
