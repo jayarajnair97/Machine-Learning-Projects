@@ -1,0 +1,323 @@
+# Banks and credit card companies calculate your credit score to determine your creditworthiness. It helps banks and credit 
+# card companies immediately to issue loans to customers with good creditworthiness. Today banks and credit card companies 
+# use Machine Learning algorithms to classify all the customers in their database based on their credit history. So, if you 
+# want to learn how to use Machine Learning for credit score classification, this article is for you. In this article, I will 
+# take you through the task of credit score classification with Machine Learning using Python.
+
+# Credit Score Classification
+# There are three credit scores that banks and credit card companies use to label their customers:
+# Good, Standard, Poor
+# A person with a good credit score will get loans from any bank and financial institution. For the task of Credit Score 
+# Classification, we need a labelled dataset with credit scores.
+
+
+
+#input
+#importing Libraries
+import pandas as pd
+import numpy as np
+import plotly.express as px
+import plotly.graph_objects as go
+import plotly.io as pio
+pio.templates.default = "plotly_white"
+
+​#loading dataset
+data = pd.read_csv("train_credit_score_dataset")
+data.head()
+
+# data set info analysis
+data.info()
+
+data.describe
+
+print(data.isnull().sum())
+
+
+# in:
+print(data.isnull().sum())
+
+# out:
+ID                          0
+Customer_ID                 0
+Month                       0
+Name                        0
+Age                         0
+SSN                         0
+Occupation                  0
+Annual_Income               0
+Monthly_Inhand_Salary       0
+Num_Bank_Accounts           0
+Num_Credit_Card             0
+Interest_Rate               0
+Num_of_Loan                 0
+Type_of_Loan                0
+Delay_from_due_date         0
+Num_of_Delayed_Payment      0
+Changed_Credit_Limit        0
+Num_Credit_Inquiries        0
+Credit_Mix                  0
+Outstanding_Debt            0
+Credit_Utilization_Ratio    0
+Credit_History_Age          0
+Payment_of_Min_Amount       0
+Total_EMI_per_month         0
+Amount_invested_monthly     0
+Payment_Behaviour           0
+Monthly_Balance             0
+Credit_Score                0
+dtype: int64
+
+
+# in:
+data["Credit_Score"].value_counts()
+# Out:
+Credit_Score
+Standard    53174
+Poor        28998
+Good        17828
+Name: count, dtype: int64
+
+#DATA EXPLORATION 
+fig = px.box(data, 
+             x="Occupation",  
+             color="Credit_Score", 
+             title="Credit Scores Based on Occupation", 
+             color_discrete_map={'Poor':'red',
+                                 'Standard':'yellow',
+                                 'Good':'green'})
+fig.show()
+
+
+fig = px.box(data, 
+             x="Credit_Score", 
+             y="Annual_Income", 
+             color="Credit_Score",
+             title="Credit Scores Based on Annual Income", 
+             color_discrete_map={'Poor':'red',
+                                 'Standard':'yellow',
+                                 'Good':'green'})
+fig.update_traces(quartilemethod="exclusive")
+fig.show()
+
+fig = px.box(data, 
+             x="Credit_Score", 
+             y="Monthly_Inhand_Salary", 
+             color="Credit_Score",
+             title="Credit Scores Based on Monthly Inhand Salary", 
+             color_discrete_map={'Poor':'red',
+                                 'Standard':'yellow',
+                                 'Good':'green'})
+fig.update_traces(quartilemethod="exclusive")
+fig.show()
+
+fig = px.box(data, 
+             x="Credit_Score", 
+             y="Num_Bank_Accounts", 
+             color="Credit_Score",
+             title="Credit Scores Based on Number of Bank Accounts", 
+             color_discrete_map={'Poor':'red',
+                                 'Standard':'yellow',
+                                 'Good':'green'})
+fig.update_traces(quartilemethod="exclusive")
+fig.show()
+
+fig = px.box(data, 
+             x="Credit_Score", 
+             y="Num_Credit_Card", 
+             color="Credit_Score",
+             title="Credit Scores Based on Number of Credit cards", 
+             color_discrete_map={'Poor':'red',
+                                 'Standard':'yellow',
+                                 'Good':'green'})
+fig.update_traces(quartilemethod="exclusive")
+fig.show()
+
+fig = px.box(data, 
+             x="Credit_Score", 
+             y="Interest_Rate", 
+             color="Credit_Score",
+             title="Credit Scores Based on the Average Interest rates", 
+             color_discrete_map={'Poor':'red',
+                                 'Standard':'yellow',
+                                 'Good':'green'})
+fig.update_traces(quartilemethod="exclusive")
+fig.show()
+
+fig = px.box(data, 
+             x="Credit_Score", 
+             y="Num_of_Loan", 
+             color="Credit_Score", 
+             title="Credit Scores Based on Number of Loans Taken by the Person",
+             color_discrete_map={'Poor':'red',
+                                 'Standard':'yellow',
+                                 'Good':'green'})
+fig.update_traces(quartilemethod="exclusive")
+fig.show()
+
+fig = px.box(data, 
+             x="Credit_Score", 
+             y="Delay_from_due_date", 
+             color="Credit_Score",
+             title="Credit Scores Based on Average Number of Days Delayed for Credit card Payments", 
+             color_discrete_map={'Poor':'red',
+                                 'Standard':'yellow',
+                                 'Good':'green'})
+fig.update_traces(quartilemethod="exclusive")
+fig.show()
+
+fig = px.box(data, 
+             x="Credit_Score", 
+             y="Num_of_Delayed_Payment", 
+             color="Credit_Score", 
+             title="Credit Scores Based on Number of Delayed Payments",
+             color_discrete_map={'Poor':'red',
+                                 'Standard':'yellow',
+                                 'Good':'green'})
+fig.update_traces(quartilemethod="exclusive")
+fig.show()
+
+fig = px.box(data, 
+             x="Credit_Score", 
+             y="Outstanding_Debt", 
+             color="Credit_Score", 
+             title="Credit Scores Based on Outstanding Debt",
+             color_discrete_map={'Poor':'red',
+                                 'Standard':'yellow',
+                                 'Good':'green'})
+fig.update_traces(quartilemethod="exclusive")
+fig.show()
+
+fig = px.box(data, 
+             x="Credit_Score", 
+             y="Credit_Utilization_Ratio", 
+             color="Credit_Score",
+             title="Credit Scores Based on Credit Utilization Ratio", 
+             color_discrete_map={'Poor':'red',
+                                 'Standard':'yellow',
+                                 'Good':'green'})
+fig.update_traces(quartilemethod="exclusive")
+fig.show()
+
+fig = px.box(data, 
+             x="Credit_Score", 
+             y="Credit_History_Age", 
+             color="Credit_Score", 
+             title="Credit Scores Based on Credit History Age",
+             color_discrete_map={'Poor':'red',
+                                 'Standard':'yellow',
+                                 'Good':'green'})
+fig.update_traces(quartilemethod="exclusive")
+fig.show()
+
+fig = px.box(data, 
+             x="Credit_Score", 
+             y="Total_EMI_per_month", 
+             color="Credit_Score", 
+             title="Credit Scores Based on Total Number of EMIs per Month",
+             color_discrete_map={'Poor':'red',
+                                 'Standard':'yellow',
+                                 'Good':'green'})
+fig.update_traces(quartilemethod="exclusive")
+fig.show()
+
+fig = px.box(data, 
+             x="Credit_Score", 
+             y="Amount_invested_monthly", 
+             color="Credit_Score", 
+             title="Credit Scores Based on Amount Invested Monthly",
+             color_discrete_map={'Poor':'red',
+                                 'Standard':'yellow',
+                                 'Good':'green'})
+fig.update_traces(quartilemethod="exclusive")
+fig.show()
+
+fig = px.box(data, 
+             x="Credit_Score", 
+             y="Monthly_Balance", 
+             color="Credit_Score", 
+             title="Credit Scores Based on Monthly Balance Left",
+             color_discrete_map={'Poor':'red',
+                                 'Standard':'yellow',
+                                 'Good':'green'})
+fig.update_traces(quartilemethod="exclusive")
+fig.show()
+
+# CREDIT SCORE CLASSIFICATION MODEL
+# One more important feature (Credit Mix) in the dataset is valuable for determining credit scores. 
+# The credit mix feature tells about the types of credits and loans you have taken.
+
+# As the Credit_Mix column is categorical, I will transform it into a numerical feature so that we can use 
+# it to train a Machine Learning model for the task of credit score classification:
+
+data["Credit_Mix"] = data["Credit_Mix"].map({"Standard": 1, 
+                               "Good": 2, 
+                               "Bad": 0})
+
+# Now I will split the data into features and labels by selecting the features we found important for our model:
+
+from sklearn.model_selection import train_test_split
+x = np.array(data[["Annual_Income", "Monthly_Inhand_Salary", 
+                   "Num_Bank_Accounts", "Num_Credit_Card", 
+                   "Interest_Rate", "Num_of_Loan", 
+                   "Delay_from_due_date", "Num_of_Delayed_Payment", 
+                   "Credit_Mix", "Outstanding_Debt", 
+                   "Credit_History_Age", "Monthly_Balance"]])
+y = np.array(data[["Credit_Score"]])
+
+# let’s split the data into training and test sets and proceed further by training a credit score classification model:
+
+xtrain, xtest, ytrain, ytest = train_test_split(x, y, 
+                                                    test_size=0.33, 
+                                                    random_state=42)
+from sklearn.ensemble import RandomForestClassifier
+model = RandomForestClassifier()
+model.fit(xtrain, ytrain)
+
+# out:
+C:\Users\DELL\AppData\Local\anaconda3\Lib\site-packages\sklearn\base.py:1151: DataConversionWarning:
+
+A column-vector y was passed when a 1d array was expected. Please change the shape of y to (n_samples,), for example using ravel().
+
+Out[25]:
+
+RandomForestClassifier
+RandomForestClassifier()
+
+# in:
+print("Credit Score Prediction : ")
+a = float(input("Annual Income: "))
+b = float(input("Monthly Inhand Salary: "))
+c = float(input("Number of Bank Accounts: "))
+d = float(input("Number of Credit cards: "))
+e = float(input("Interest rate: "))
+f = float(input("Number of Loans: "))
+g = float(input("Average number of days delayed by the person: "))
+h = float(input("Number of delayed payments: "))
+i = input("Credit Mix (Bad: 0, Standard: 1, Good: 3) : ")
+j = float(input("Outstanding Debt: "))
+k = float(input("Credit History Age: "))
+l = float(input("Monthly Balance: "))
+
+features = np.array([[a, b, c, d, e, f, g, h, i, j, k, l]])
+print("Predicted Credit Score = ", model.predict(features))
+
+# out:
+#example:
+Credit Score Prediction : 
+Annual Income: 600000
+Monthly Inhand Salary: 50000
+Number of Bank Accounts: 2
+Number of Credit cards: 1
+Interest rate: 14
+Number of Loans: 2
+Average number of days delayed by the person: 8
+Number of delayed payments: 2
+Credit Mix (Bad: 0, Standard: 1, Good: 3) : 3
+Outstanding Debt: 50000
+Credit History Age: 4
+Monthly Balance: 20000
+Predicted Credit Score =  ['Standard']
+
+# Classifying customers based on their credit scores helps banks and credit card companies immediately to issue loans to customers with good creditworthiness. 
+#A person with a good credit score will get loans from any bank and financial institution.
+
