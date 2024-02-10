@@ -16,14 +16,13 @@ from bs4 import BeautifulSoup
 # Define the URL of the BBC news website
 url = "https://www.bbc.com/news"
 
-# Initialize a Selenium webdriver (make sure you have the appropriate webdriver installed)
-driver = webdriver.Chrome()  # You may need to specify the path to your webdriver executable
+# Initialize a Selenium webdriver 
+driver = webdriver.Chrome() 
 
 # Open the URL in the browser
 driver.get(url)
 
 # Get the page source after waiting for some time for dynamic content to load
-# (You may need to adjust the waiting time based on the loading speed of the website)
 driver.implicitly_wait(10)
 html = driver.page_source
 
@@ -65,11 +64,6 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 
-# Download NLTK resources (uncomment if not already downloaded)
-# nltk.download('punkt')
-# nltk.download('stopwords')
-# nltk.download('wordnet')
-
 # Initialize the WordNet lemmatizer and stopwords
 lemmatizer = WordNetLemmatizer()
 stop_words = set(stopwords.words('english'))
@@ -101,7 +95,7 @@ for headline in cleaned_headlines:
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 # Initialize the TF-IDF vectorizer
-tfidf_vectorizer = TfidfVectorizer(max_features=1000)  # You can adjust the max_features parameter as needed
+tfidf_vectorizer = TfidfVectorizer(max_features=1000)  
 
 # Fit and transform the cleaned headlines using TF-IDF vectorizer
 tfidf_matrix = tfidf_vectorizer.fit_transform(cleaned_headlines)
@@ -115,7 +109,7 @@ print("TF-IDF array shape:", tfidf_array.shape)
 from sklearn.cluster import KMeans
 import numpy as np
 
-# Define the number of clusters (topics) based on your requirements
+# Defining the number of clusters based on requirements
 num_clusters = 4  # Adjust this based on the topics you want to identify
 
 # Apply K-means clustering
@@ -160,14 +154,14 @@ y = cluster_labels
 # Split the data into training and testing sets
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-# Initialize and train the classifier (Naive Bayes)
+# Initializing and training the classifier (Naive Bayes)
 classifier = MultinomialNB()
 classifier.fit(X_train, y_train)
 
 # Predict the labels for the test set
 y_pred = classifier.predict(X_test)
 
-# Evaluate the model
+# Evaluating the model
 accuracy = accuracy_score(y_test, y_pred)
 print("Accuracy:", accuracy)
 print("\nClassification Report:")
@@ -193,7 +187,7 @@ max_length = 100  # Adjust as needed based on the maximum number of words in a h
 X_train_pad = pad_sequences(X_train, maxlen=max_length, padding='post')
 X_test_pad = pad_sequences(X_test, maxlen=max_length, padding='post')
 
-# Define the LSTM model
+# Defining the LSTM model
 model = Sequential()
 model.add(Embedding(input_dim=X_train_pad.shape[1], output_dim=128, input_length=max_length))
 model.add(SpatialDropout1D(0.2))
@@ -213,7 +207,7 @@ print("Accuracy:", accuracy)
 
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 
-# Evaluate the performance of the classification model on the testing set
+# Evaluating the performance of the classification model on the testing set
 accuracy = accuracy_score(y_test, y_pred)
 precision = precision_score(y_test, y_pred, average='weighted')
 recall = recall_score(y_test, y_pred, average='weighted')
@@ -225,8 +219,9 @@ print("Precision:", precision)
 print("Recall:", recall)
 print("F1-score:", f1)
 
-# Fine-tune the model parameters if needed to improve performance
-# You can adjust hyperparameters, try different architectures, or perform more extensive hyperparameter tuning using techniques like grid search or random search.
+# You may experiment with other topologies, fine-tune the model parameters if necessary, or carry out more thorough 
+# hyperparameter tuning using methods like grid search or random search.
+
 
 import streamlit as st
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -234,7 +229,7 @@ from sklearn.naive_bayes import MultinomialNB
 from sklearn.metrics import accuracy_score, classification_report
 
 # Define the classification model
-classifier = MultinomialNB()  # Initialize the Naive Bayes classifier (you can use any other classifier as well)
+classifier = MultinomialNB()  # Initialize the Naive Bayes classifier
 
 # Function to preprocess text
 def preprocess_text(text):
