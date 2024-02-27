@@ -49,13 +49,13 @@ nltk.download('wordnet')
 nltk.download('stopwords')
 
 # Import spaCy
-import spacy
+#import spacy
 
 # Import gensim
-import gensim
+#import gensim
 
 # Import TextBlob
-from textblob import TextBlob
+#from textblob import TextBlob
 
 # Import scikit-learn
 import sklearn
