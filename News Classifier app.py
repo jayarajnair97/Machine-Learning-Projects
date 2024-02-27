@@ -1,13 +1,17 @@
 
-#Building a news classification system involves several steps, including web scraping, data preprocessing, and model training. Below is a high-level outline of the 
-#steps you can follow using Natural Language Processing (NLP) techniques:
+#Building a news classification system involves several steps, including web scraping, data preprocessing, and model training. 
+#Below is a high-level outline of the steps you can follow using Natural Language Processing (NLP) techniques:
 
 # Need for project
 # For a number of reasons, a news classifier machine learning project may be quite beneficial.
-#Content curation: It can be difficult for people to locate reliable and pertinent information online due to the deluge of news stories accessible. 
-#To ensure that readers receive material that is relevant to their interests, a news classifier can assist in curating articles based on particular subjects.
-#Personalization: A news classifier can provide readers with news suggestions that are tailored to their interests and reading patterns by examining their preferences and behavior.
-#Fake News Detection: A news classifier can assist in identifying and flagging untrustworthy sources or articles, encouraging media literacy and combatting disinformation in light of the spread of fake news and misinformation.
+#Content curation: It can be difficult for people to locate reliable and pertinent information online due to the deluge of news 
+#stories accessible. 
+#To ensure that readers receive material that is relevant to their interests, a news classifier can assist in curating articles based 
+#on particular subjects.
+#Personalization: A news classifier can provide readers with news suggestions that are tailored to their interests and reading patterns 
+#by examining their preferences and behavior.
+#Fake News Detection: A news classifier can assist in identifying and flagging untrustworthy sources or articles, encouraging media 
+#literacy and combatting disinformation in light of the spread of fake news and misinformation.
 #Topic Trend Analysis: A news classifier can assist with this by grouping news stories into several subjects or themes.
 
 from selenium import webdriver
