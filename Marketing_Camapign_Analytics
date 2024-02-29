@@ -1,0 +1,328 @@
+import numpy as np # linear algebra
+import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
+
+# Input data files are available in the read-only "../input/" directory
+# For example, running this (by clicking run or pressing Shift+Enter) will list all files under the input directory
+
+import os
+for dirname, _, filenames in os.walk('/kaggle/input'):
+    for filename in filenames:
+        print(os.path.join(dirname, filename))
+
+Content
+The data set ifood_df.csv consists of 2206 customers of XYZ company with data on:
+Customer profiles, Product preferences, Campaign successes/failures, Channel performance
+Task Details You're a marketing analyst and you've been told by the Chief Marketing Officer that recent marketing campaigns have not been as effective as they were expected to be. You need to analyze the data set to understand this problem and propose data-driven solutions.
+Expected Submission Submit a well documented notebook with these four sections:
+
+#Section 01: Exploratory Data Analysis Are there any null values or outliers? How will you wrangle/handle them? Are there any variables that warrant transformations? Are there any useful variables that you can engineer with the given data? Do you notice any patterns or anomalies in the data? Can you plot them?,
+#Section 02: Statistical Analysis Please run statistical tests in the form of regressions to answer these questions & propose data-driven action recommendations to your CMO. Make sure to interpret your results with non-statistical jargon so your CMO can understand your findings. What factors are significantly related to the number of store purchases? Does US fare significantly better than the Rest of the World in terms of total purchases? Your supervisor insists that people who buy gold are more conservative. Therefore, people who spent an above average amount on gold in the last 2 years would have more in store purchases. Justify or refute this statement using an appropriate statistical test Fish has Omega 3 fatty acids which are good for the brain. Accordingly, do "Married PhD candidates" have a significant relation with amount spent on fish? What other factors are significantly related to amount spent on fish? (Hint: use your knowledge of interaction variables/effects) Is there a significant relationship between geographical regional and success of a campaign?,
+Section 03: Data Visualization Please plot and visualize the answers to the below questions. Which marketing campaign is most successful? What does the average customer look like for this company? Which products are performing best? Which channels are underperforming?,
+#Section 04: CMO Recommendations Bring together everything from Sections 01 to 03 and provide data-driven recommendations/suggestions to your CMO. Evaluation This is not a formal competition, so results won't be measured using a strict metric. Rather, what one would like to see is a well-defined process of exploratory and statistical analysis with insightful conclusions.
+
+Data Exploration - Was the data wrangled properly? How well was the data analyzed? Are there any useful visualizations? Does the reader learn any new techniques through this submission? A great entry will be informative and thought provoking.
+Statistical Analysis - Were the right statistical tests used? How well was the statistical output interpreted? A great entry will interpret results without the use of any statistical jargon.
+Business Recommendation - Were the recommendations tied to your analysis in Sections 1-3? Are they data-driven and focused on marketing concepts such as targets, channels, or products?
+Documentation - Are your code, and notebook well documented so a reader can understand what you did? Are your sources clearly cited? A high quality analysis should be concise and clear at each step so the rationale is easy to follow and the process is reproducible.
+
+ID=Customer's unique identifier,
+Year_Birth=Customer's birth year,
+Education=Customer's education level,
+Marital_Status=Customer's marital status,
+Income=Customer's yearly household income,
+Kidhome=Number of children in customer's household,
+Teenhome=Number of teenagers in customer's household,
+Dt_Customer=Date of customer's enrollment with the company,
+Recency=Number of days since customer's last purchase,
+MntWines=Amount spent on wine in the last 2 years,
+MntFruits=Amount spent on fruits in the last 2 years,
+MntMeatProducts=Amount spent on meat in the last 2 years
+MntFishProducts=Amount spent on fish in the last 2 years,
+MntSweetProducts=Amount spent on sweets in the last 2 years,
+MntGoldProds=Amount spent on gold in the last 2 years,
+NumDealsPurchases=Number of purchases made with a discount,
+NumWebPurchases=Number of purchases made through the company's web site,
+NumCatalogPurchases=Number of purchases made using a catalogue,
+NumStorePurchases=Number of purchases made directly in stores,
+NumWebVisitsMonth=Number of visits to company's web site in the last month,
+AcceptedCmp3=1 if customer accepted the offer in the 3rd campaign, 0 otherwise,
+AcceptedCmp4=1 if customer accepted the offer in the 4th campaign, 0 otherwise,
+AcceptedCmp5=1 if customer accepted the offer in the 5th campaign, 0 otherwise,
+AcceptedCmp1=1 if customer accepted the offer in the 1st campaign, 0 otherwise,
+AcceptedCmp2=1 if customer accepted the offer in the 2nd campaign, 0 otherwise,
+Response=1 if customer accepted the offer in the last campaign, 0 otherwise,
+Complain=1 if customer complained in the last 2 years, 0 otherwise,
+
+#Code
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn 
+import tensorflow as tf
+import sklearn
+import math
+Data=pd.read_csv('Marketing_analysis_dataset')
+Data.head()
+
+Data.info()
+import pandas as pd
+
+# Assuming Data is your DataFrame
+a = pd.DataFrame(Data['Income'].isna().values, columns=['Incomenan'])
+list_medium_income = []
+
+for i in Data['Income'].copy().dropna():
+    if isinstance(i, str):  # Check if the value is a string
+        foo = int(i.split('$')[1].split(' ')[0].split('.')[0].replace(",", ""))
+        list_medium_income.append(foo)
+    elif isinstance(i, float):  # Check if the value is a float
+        list_medium_income.append(i)  # Append the float value as it is
+    else:
+        raise ValueError(f"Unexpected data type: {type(i)}")
+
+mean_income = int(np.mean(list_medium_income))
+Data['Income'] = Data['Income'].fillna(mean_income)
+
+year = []
+day = []
+month = []
+
+for value in Data['Customer_Days']:
+    if isinstance(value, str):  # Check if the value is a string
+        parts = value.split('/')
+        day.append(int(parts[1]))
+        month.append(int(parts[0]))
+    elif isinstance(value, int):  # Check if the value is an integer
+        # Handle the integer value as needed
+        # For example, you could append it directly to the list
+        day.append(value)  # Append the integer value directly
+        month.append(value)  # Append the integer value directly
+    else:
+        raise ValueError(f"Unexpected data type: {type(value)}")
+
+# How many unique values are in Columns of Data ?
+for i in Data.columns:
+    print(F'{i}:',len(Data[i].unique()))
+
+Data.head(5)
+Data.info()
+
+plt.figure(figsize=(20,10))
+seaborn.heatmap(Data.corr(),annot=True)
+plt.show()
+
+label = 'Accept','Not Aceept'
+plt.pie([len(Data['Response'][Data['Response']==1]),len(Data['Response'][Data['Response']==0])],labels=label,autopct='%1.1f%%',shadow=True, startangle=90)
+plt.title('Last Campagin');
+
+Data.describe().T
+
+for i in Data.columns:
+    if Data[i].dtype=='<i8': 
+        print('type int64:',i,'Mean:',int(Data[i].mean()))
+    else:
+        print('type object:',i,'Mode:',Data[i].mode()[0])
+
+for _ in Data.columns:
+    if _=='Response'or _=='Income':
+        pass
+    else:
+        fig = plt.figure(figsize = (10, 5))
+        uniqe_list=[i for i in Data[Data['Response']==1][f'{_}'].unique()]
+        uniqe_values=[len(Data[Data['Response']==1][f'{_}'][Data[Data['Response']==1][f'{_}']==i]) for i in Data[Data['Response']==1][f'{_}'].unique()]
+
+        plt.bar(uniqe_list, uniqe_values, color ='pink',width = 0.4)
+        plt.xlabel(f"{_} values of  who accepted last campaign  features",fontsize=10)
+        plt.ylabel(f"{_} values of  who accepted last campaign  Values",fontsize=10)
+        plt.title(f"{_} values of  who accepted last campaign ",fontsize=15);
+
+# mean,mode of accept response 
+for i in Data.columns:
+    if Data[i].dtype=='<i8': 
+        print('type int64:',i,'Mean:',int(Data[i][Data['Response']==1].mean()))
+    else:
+        print('type object:',i,'Mode:',Data[i][Data['Response']==1].mode()[0])
+
+# mean,mode of don't accept response 
+for i in Data.columns:
+    if Data[i].dtype=='<i8': 
+        print('type int64:',i,'Mean:',int(Data[i][Data['Response']==0].mean()))
+    else:
+        print('type object:',i,'Mode:',Data[i][Data['Response']==0].mode()[0])
+
+education=pd.get_dummies(Data['education_2n Cycle'],drop_first=True)
+education=pd.get_dummies(Data['education_Basic'],drop_first=True)
+education=pd.get_dummies(Data['education_Graduation'],drop_first=True)
+education=pd.get_dummies(Data['education_Master'],drop_first=True)
+education=pd.get_dummies(Data['education_PhD'],drop_first=True)
+marital=pd.get_dummies(Data['marital_Divorced'],drop_first=True)
+marital=pd.get_dummies(Data['marital_Married'],drop_first=True)
+marital=pd.get_dummies(Data['marital_Single'],drop_first=True)
+marital=pd.get_dummies(Data['marital_Together'],drop_first=True)
+marital=pd.get_dummies(Data['marital_Widow'],drop_first=True)
+country=pd.get_dummies(Data['AcceptedCmpOverall'],drop_first=True)
+ıncomenan=pd.get_dummies(Data['Income'],drop_first=True)
+
+new_data=pd.concat([Data.drop(columns=['education_2n Cycle','education_Basic', 'education_Graduation', 'education_Master', 'education_PhD','marital_Divorced', 'marital_Married', 'marital_Single', 'marital_Together', 'marital_Widow', 'Income','AcceptedCmpOverall']),education,marital,country,ıncomenan],axis=1)
+
+new_data.head()
+
+x=new_data.copy().drop(columns=['Response']).values
+y=new_data['Response'].values
+
+#Model
+from sklearn.model_selection import train_test_split
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.1, random_state=42)
+
+print('Train_x:',x_train.shape)
+print('Train_y:',y_train.shape)
+print('Test_x:',x_test.shape)
+print('Test_y:',y_test.shape)
+
+from sklearn.preprocessing import StandardScaler
+obje_ss=StandardScaler()
+
+x_train_ss=obje_ss.fit_transform(x_train)
+x_test_ss=obje_ss.fit_transform(x_test)
+
+#Logistic Regression
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import cross_val_score
+from sklearn.model_selection import GridSearchCV
+
+model_le=LogisticRegression(random_state=42,max_iter=10000)
+model_le.fit(x_train,y_train)
+parameters = {'C':[0.8,0.9,1,1.1,1.2]}
+model_le_grid = GridSearchCV(model_le, parameters,cv=10,verbose=1,n_jobs=-1).fit(x_train,y_train)
+print(model_le_grid.best_params_)
+
+print('Logistic Regression Train score:',model_le.score(x_train,y_train)*100)
+print('Logistic Regression Cros validation score:',model_le_grid.best_score_*100)
+
+model_le=LogisticRegression(random_state=42,C=0.8)
+model_le.fit(x_train,y_train)
+print('Logistic Regression Train score:',model_le.score(x_train,y_train)*100)
+
+#Support Vector Classication¶
+from sklearn import svm
+
+model_svc=svm.SVC(random_state=42)
+parameters = {'kernel':('linear', 'rbf','poly'), 'C':[0.8,0.9,1,1.1,1.2],'degree':[3,4,5,6]}
+model_svc_grid = GridSearchCV(model_svc, parameters,cv=10,verbose=1,n_jobs=-1).fit(x_train_ss,y_train)
+print(model_svc_grid.best_params_)
+
+
+print('Support Vecktor Classification Cros validation score:',model_svc_grid.best_score_*100)
+
+model_svc=svm.SVC(random_state=42,C=0.8,kernel='linear')
+model_svc.fit(x_train_ss,y_train)
+print('Support Vecktor Classification Train score:',model_svc.score(x_train_ss,y_train)*100)
+
+#Tree
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import GridSearchCV
+
+# Define the RandomForestClassifier model
+model_rfc = RandomForestClassifier(n_jobs=-1)
+
+# Define the parameter grid to search
+parameters = {'n_estimators': [50, 100, 200, 300, 400],
+              'max_depth': [3, 4, 5, 6]}
+
+try:
+    # Perform GridSearchCV with 10-fold cross-validation
+    model_rfc_grid = GridSearchCV(model_rfc, parameters, cv=10, verbose=1, n_jobs=-1).fit(x_train, y_train)
+    
+    # Print the best parameters found by GridSearchCV
+    print(model_rfc_grid.best_params_)
+    
+    # Print the cross-validation score of the best model
+    print('Random Forest Classifier Cross-validation score:', model_rfc_grid.best_score_ * 100)
+    
+except Exception as e:
+    print("An error occurred:", e)
+model_rfc=RandomForestClassifier(n_jobs=-1,n_estimators=100,max_depth=6)
+model_rfc.fit(x_train,y_train)
+print('Random Forest Classifier Train score:',model_rfc.score(x_train,y_train)*100)
+
+from xgboost import XGBClassifier
+from sklearn.model_selection import GridSearchCV
+
+# Define the XGBClassifier model
+model_xgb = XGBClassifier(n_jobs=-1, random_state=42, eval_metric='logloss')
+
+# Define the parameter grid to search
+parameters = {'n_estimators': [50, 100, 200],
+              'max_depth': [3, 4, 5, 6],
+              'learning_rate': [0.1, 0.01]}
+
+try:
+    # Perform GridSearchCV with 10-fold cross-validation
+    model_xgb_grid = GridSearchCV(model_xgb, parameters, cv=10, verbose=1, n_jobs=-1).fit(x_train, y_train)
+    
+    # Print the best parameters found by GridSearchCV
+    print(model_xgb_grid.best_params_)
+    
+    # Print the cross-validation score of the best model
+    print('XGBoost Classifier Cross-validation score:', model_xgb_grid.best_score_ * 100)
+    
+except Exception as e:
+    print("An error occurred:", e)
+
+#DNN
+model_dnn=tf.keras.Sequential()
+
+model_dnn.add(tf.keras.layers.Dense(25,activation='relu',input_dim=44))
+model_dnn.add(tf.keras.layers.Dropout(0.5))
+model_dnn.add(tf.keras.layers.Dense(10,activation='relu'))
+model_dnn.add(tf.keras.layers.Dropout(0.5))
+model_dnn.add(tf.keras.layers.Dense(1,activation='sigmoid'))
+model_dnn.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.01),loss="binary_crossentropy",metrics=['accuracy'])\
+
+model_dnn.summary()
+
+from keras.models import Sequential
+from keras.layers import Dense
+
+# Define your model
+model = Sequential()
+
+# Adjust input layer to accept input with shape (None, 1994)
+model.add(Dense(units=64, input_shape=(1994,), activation='relu'))
+model.add(Dense(units=32, activation='relu'))
+model.add(Dense(units=1, activation='sigmoid'))
+
+# Compile the model
+model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+
+# Train the model
+history = model.fit(x_train_ss, y_train, epochs=300, verbose=0)
+
+print('Loss:',history.history['loss'][-1])
+print('Accuracy: %',history.history['accuracy'][-1]*100)
+
+plt.plot(history.history['loss'], label='loss')
+plt.xlim([0,epoch])
+plt.xlabel('Epoch')
+plt.ylabel('Error')
+plt.legend()
+plt.grid(True)
+
+from sklearn.metrics import classification_report
+
+def test_score(model_name):
+  for i in model_name: 
+    print(f'{i.__class__} \n{classification_report(y_test,i.predict(x_test))}')
+
+def test_score_ss(model_name):
+  for i in model_name:
+    print(f'{i.__class__} \n{classification_report(y_test,i.predict(x_test_ss))}') 
+
+liste_test=[model_le,model_rfc,model_xgb]
+liste_test_ss=[model_svc]
+
+test_score(liste_test)
+test_score_ss(liste_test_ss)
+
+
+
