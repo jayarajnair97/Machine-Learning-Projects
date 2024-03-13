@@ -61,6 +61,7 @@ import seaborn
 import tensorflow as tf
 import sklearn
 import math
+import streamlit as st
 Data=pd.read_csv('Marketing_analysis_dataset')
 Data.head()
 
@@ -324,5 +325,42 @@ liste_test_ss=[model_svc]
 test_score(liste_test)
 test_score_ss(liste_test_ss)
 
+# Main function to run the app
+def main():
+    st.title('Marketing Campaign Analysis App')
+    st.sidebar.title('Model Selection')
 
+    # Add file uploader to sidebar to upload CSV file
+    uploaded_file = st.sidebar.file_uploader("Upload CSV", type=['csv'])
+
+    if uploaded_file is not None:
+        data = pd.read_csv(uploaded_file)
+        st.write(data.head())
+
+        # Preprocess the data
+        processed_data = preprocess_data(data)
+
+        # Load pre-trained models
+        model_le, model_rfc, model_xgb, model_dnn = load_models()
+
+        # Check which model is selected
+        model_name = st.sidebar.selectbox('Select Model', ('Logistic Regression', 'Random Forest', 'XGBoost', 'DNN'))
+
+        if model_name == 'Logistic Regression':
+            model = model_le
+        elif model_name == 'Random Forest':
+            model = model_rfc
+        elif model_name == 'XGBoost':
+            model = model_xgb
+        elif model_name == 'DNN':
+            model = model_dnn
+
+        # Make predictions
+        predictions = model.predict(processed_data)
+
+        # Display predictions
+        st.write(predictions)
+
+if __name__ == '__main__':
+    main()
 
